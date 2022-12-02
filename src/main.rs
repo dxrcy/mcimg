@@ -14,7 +14,7 @@ fn main() {
     .expect("Could not read image file")
     .into_rgb8();
 
-  let (img, materials) = make_img(original, map, 50, FilterType::Nearest);
+  let (img, materials) = make_img(original, map, 200, FilterType::Nearest);
 
   img
     .save("./output.png")
