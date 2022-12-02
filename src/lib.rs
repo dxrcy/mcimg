@@ -2,6 +2,10 @@ use std::{collections::HashMap, fs, path::PathBuf};
 
 use image::{ImageBuffer, Rgb, Rgba};
 
+mod pattern;
+
+use pattern::Pattern;
+
 /// Resolution of minecraft block (default: 16)
 const BLOCK_RES: u32 = 16;
 
@@ -13,7 +17,7 @@ pub type Image = ImageBuffer<Rgb<u8>, Vec<u8>>;
 pub type Map = HashMap<String, (Rgb<u8>, Image)>;
 
 /// Create image from input image and map of blocks
-/// 
+///
 /// Returns final image and `HashMap` of required blocks
 ///
 /// `original`: `ImageBuffer` of `Rgb<u8>`
@@ -45,6 +49,7 @@ pub fn make_img(
   }
 
   // Create list of blocks required
+  //TODO Convert texture name to block name, with big list
   let mut materials: HashMap<String, u32> = HashMap::new();
   for block in &blocks {
     let entry = materials.entry(block.clone()).or_insert(0);
@@ -75,11 +80,14 @@ pub fn make_img(
 
 /// Get map of blocks from file path
 /// TODO ? Cache ?
-pub fn get_map(path: &str) -> Map {
+pub fn get_map(path: &str, blacklist: &Vec<&str>) -> Map {
   let mut map: Map = HashMap::new();
 
+  // Convert blacklist to list of patterns
+  let blacklist_patterns: Vec<Pattern> = blacklist.iter().map(|x| Pattern::from(x)).collect();
+
   // Loop files in directory
-  for file in fs::read_dir(path)
+  'File: for file in fs::read_dir(path)
     .expect("Could not read texture directory")
     .flatten()
   {
@@ -100,6 +108,13 @@ pub fn get_map(path: &str) -> Map {
       None => continue,
       Some(x) => x,
     };
+
+    // Continue if name matches any item in blacklist
+    for pattern in &blacklist_patterns {
+      if pattern.matches(name) {
+        continue 'File;
+      }
+    }
 
     // Read image if is valid
     if let Some((av, img)) = read_img(file.path()) {
