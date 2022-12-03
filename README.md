@@ -4,6 +4,8 @@ Convert an image into Minecraft blocks.
 
 Made with Rust, [`image`](https://crates.io/crates/image), and [`clap`](https://crates.io/crates/clap).
 
+[Latest Release](https://github.com/darccyy/mcimg/releases/latest)
+
 ```
 Usage: mcimg.exe [OPTIONS] <INPUT>
 
