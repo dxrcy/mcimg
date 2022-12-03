@@ -19,7 +19,7 @@ build:
 
   # Move package binary, copy assets
   move target/release/mcimg.exe dist/temp/{{name}}.exe;
-  copy textures dist/temp/textures;
+  copy -Recurse textures dist/temp/textures;
 
   # Zip package, delete ./dist/temp
   Compress-Archive -LiteralPath dist/temp/mcimg.exe, dist/temp/textures -DestinationPath dist/{{zip}}
