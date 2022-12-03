@@ -2,12 +2,13 @@ use std::{collections::HashMap, fs, path::PathBuf};
 
 use image::{ImageBuffer, Rgb, Rgba};
 
+pub mod args;
 mod pattern;
 
 use pattern::Pattern;
 
-/// Resolution of minecraft block (default: 16)
-const BLOCK_RES: u32 = 16;
+/// Resolution of minecraft block (16)
+pub const BLOCK_RES: u32 = 16;
 
 /// Alias for `ImageBuffer` with `Rgb<u8>`
 ///
@@ -80,7 +81,7 @@ pub fn make_img(
 
 /// Get map of blocks from file path
 /// TODO ? Cache ?
-pub fn get_map(path: &str, blacklist: &Vec<&str>) -> Map {
+pub fn get_map(path: &str, blacklist: &Vec<String>) -> Map {
   let mut map: Map = HashMap::new();
 
   // Convert blacklist to list of patterns

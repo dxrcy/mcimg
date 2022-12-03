@@ -1,37 +1,62 @@
 use std::fs;
 
+use clap::Parser;
 use image::imageops::FilterType;
 
-use mcimg::{get_map, make_img, Image, Map};
+use mcimg::{args::McImgArgs, get_map, make_img, Image, Map};
 
-const TEXTURES_PATH: &str = "./textures/";
-const BLACKLIST_PATH: &str = "./blacklist.txt";
-const IMG_IN: &str = "./test.jpg";
-
+//TODO ! Better error handling !
 fn main() {
-  let blacklist = fs::read_to_string(BLACKLIST_PATH).expect("Could not read blacklist file");
+  // Parse arguments
+  let args = McImgArgs::parse();
 
-  let map: Map = get_map(TEXTURES_PATH, &blacklist.lines().collect::<Vec<_>>());
+  println!("\x1b[1mMcImg\x1b[0m");
 
-  let original: Image = image::open(IMG_IN)
+  // Get blacklist file, if not `-`
+  let blacklist = if args.blacklist != "-" {
+    fs::read_to_string(args.blacklist)
+      .expect("Could not read blacklist file")
+      .lines()
+      .map(|x| x.to_string())
+      .collect::<Vec<_>>()
+  } else {
+    vec![]
+  };
+
+  // Get map of blocks
+  println!("  Mapping textures to average colors...");
+  let map: Map = get_map(&args.textures, &blacklist);
+
+  // Open original input image
+  println!("  Parsing input image...");
+  let original: Image = image::open(args.input)
     .expect("Could not read image file")
     .into_rgb8();
 
-  let (img, materials) = make_img(original, map, 20, FilterType::Nearest);
+  // Create output image
+  println!(
+    "  Creating image with width of {} pixels...",
+    args.width * mcimg::BLOCK_RES
+  );
+  //TODO Add filter to args ?
+  let (img, materials) = make_img(original, map, args.width, FilterType::Nearest);
 
-  img
-    .save("./output.png")
-    .expect("Could not save final image");
+  // Save output image
+  println!("  Saving image...");
+  img.save(args.output).expect("Could not save final image");
 
-  fs::write(
-    "./materials.txt",
-    materials
-      .iter()
-      .map(|(k, v)| format!("{k} : {v}"))
-      .collect::<Vec<String>>()
-      .join("\n"),
-  )
-  .expect("Could not save list of materials");
+  // Create materials file, if not `-`
+  if args.materials != "-" {
+    fs::write(
+      args.materials,
+      materials
+        .iter()
+        .map(|(k, v)| format!("{k} : {v}"))
+        .collect::<Vec<String>>()
+        .join("\n"),
+    )
+    .expect("Could not save list of materials");
+  }
 
-  println!("Success!");
+  println!("\x1b[1mSuccess!\x1b[0m");
 }

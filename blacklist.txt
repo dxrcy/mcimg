@@ -1,4 +1,2 @@
-sponge
-end_stone
 *shulker_box*
 diamond*
