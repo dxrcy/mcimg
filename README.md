@@ -23,3 +23,7 @@ Options:
 Example image:
 
 ![Example](./mcimg.png)
+
+# Contributing
+
+Build release with `just build`
