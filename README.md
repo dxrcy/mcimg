@@ -32,8 +32,16 @@ Build release with `just build`
 
 # Todo
 
-- Add case for transparent pixels in input image
+## Features
 
+- Add case for transparent pixels in input image
+- Convert materials list to blocks, not textures
+- Add filter type to cli args ?
+
+## Improvements
+
+- Add error handling
 - Add more/better tests
 - Make doc comments better
 - Add instructions to readme
+- Cache block map ? probably not an issue as it is really fast to process
