@@ -29,3 +29,11 @@ Example image:
 # Contributing
 
 Build release with `just build`
+
+# Todo
+
+- Add case for transparent pixels in input image
+
+- Add more/better tests
+- Make doc comments better
+- Add instructions to readme
